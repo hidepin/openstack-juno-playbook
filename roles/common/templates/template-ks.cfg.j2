@@ -1,0 +1,57 @@
+#version=RHEL7
+# System authorization information
+auth --enableshadow --passalgo=sha512
+
+# Use CDROM installation media
+cdrom
+# Run the Setup Agent on first boot
+firstboot --enable
+ignoredisk --only-use=sda
+# Keyboard layouts
+keyboard --vckeymap=us --xlayouts='us'
+# System language
+lang ja_JP.UTF-8
+
+# Network information
+network  --bootproto=dhcp --device=enp2s0 --onboot=off --ipv6=auto
+network  --bootproto=static --device=enp6s2 --gateway=192.168.0.1 --ip=192.168.0.2 --nameserver=192.168.0.1 --netmask=255.255.255.0 --ipv6=auto --activate
+network  --hostname=mini.func.org
+# Root password
+rootpw --iscrypted $6$87UGl1xwdrvDDUvX$vvk837ushfxJuRSXf8XgMKZhe2VAuAVCfNArXJlS7os6bwGBeO9prQHnzYnodD93Dm.2zj0n9yU1y5wHeS5XR1
+# System services
+services --enabled="chronyd"
+# System timezone
+timezone Asia/Tokyo --isUtc --ntpservers=192.168.0.1
+user --name=openstack --password=$6$kspGn/7kjZvBno.p$wSrX2gwFJl3xwKzViDSfR3KGHnTp1GPJ1xtxKQs/8j1SRzc/Mcoq4dRTCy7bgsBM4yogw1pqqEFsBHebkZFvV/ --iscrypted --gecos="openstack"
+# X Window System configuration information
+xconfig  --startxonboot
+# System bootloader configuration
+bootloader --location=mbr --boot-drive=sda
+# Partition clearing information
+clearpart --all --initlabel --drives=sda
+# Disk partitioning information
+part swap --fstype="swap" --ondisk=sda --size=8080
+part /boot --fstype="xfs" --ondisk=sda --size=500
+part / --fstype="xfs" --ondisk=sda --size=945288
+
+%packages
+@base
+@core
+@desktop-debugging
+@dial-up
+@fonts
+@gnome-desktop
+@guest-agents
+@guest-desktop-agents
+@input-methods
+@internet-browser
+@multimedia
+@print-client
+@virtualization-client
+@virtualization-hypervisor
+@virtualization-tools
+@x11
+chrony
+
+%end
+
