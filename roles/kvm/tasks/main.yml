@@ -1,5 +1,8 @@
 ---
 # file: roles/kvm/tasks/main.yml
+- name: packages update
+  yum: name=* state=latest
+
 - name: packages install
   yum: name={{item}} state=present
   with_items:
