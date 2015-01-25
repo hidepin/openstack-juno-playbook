@@ -34,8 +34,14 @@
   service: name=network state=restarted
   when: ip_link_check.stdout.find(' br0') == -1
 
+- name: enable nested kvm
+  lineinfile: dest=/etc/modprobe.d/kvm-nested.conf regexp='^options kvm_intel nested.*' line="options kvm_intel nested=1" state=present create=yes
+
 - name: libvirtd service
   service: name=libvirtd state=started enabled=yes
+
+- name: kvm vnc settings
+  firewalld: zone=trusted permanent=true state=enabled
 
 - name: default kvm net-list check
   command: virsh net-list
@@ -67,3 +73,10 @@
 - name: ks settings
   template: src=rdo-template-ks.cfg.j2 dest=/opt/os/kscfg/{{item.host}}-ks.cfg owner=root group=root mode=644
   with_items: kvm_guest
+
+- name: ks settings
+  template: src=internal.xml.j2 dest=/root/internal.xml owner=root group=root mode=644
+
+- name: define internal net
+  shell: virsh net-define /root/internal.xml && virsh net-start internal && virsh net-autostart internal
+  when: kvm_net_list_check.stdout.find('internal') == -1
