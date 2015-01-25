@@ -3,3 +3,12 @@ sudo: no
 colon: ":"
 ntp_server: 192.168.0.1
 bridge_if: enp6s2
+bridge_mac: "{{ ansible_enp6s2.macaddress }}"
+bridge_ip: 192.168.0.2
+bridge_prefix: 24
+bridge_gateway: 192.168.0.1
+kvmguest_disk: vda
+kvm_guest:
+  - { host: 'rdo01', domain: 'func.org', ipaddress0: '192.168.0.19', netmask0: '255.255.255.0', gateway0: '192.16.0.1', nameserver0: '192.168.0.1', ipaddress1: '172.16.10.10', netmask1: '255.255.255.0' }
+  - { host: 'rdo02', domain: 'func.org', ipaddress0: '192.168.0.21', netmask0: '255.255.255.0', gateway0: '192.16.0.1', nameserver0: '192.168.0.1', ipaddress1: '172.16.10.11', netmask1: '255.255.255.0' }
+  - { host: 'rdo03', domain: 'func.org', ipaddress0: '192.168.0.23', netmask0: '255.255.255.0', gateway0: '192.16.0.1', nameserver0: '192.168.0.1', ipaddress1: '172.16.10.12', netmask1: '255.255.255.0' }

@@ -1,0 +1,69 @@
+---
+# file: roles/kvm/tasks/main.yml
+- name: packages install
+  yum: name={{item}} state=present
+  with_items:
+    - qemu-kvm
+    - libvirt
+    - virt-install
+    - virt-manager
+    - httpd
+
+- name: physical interface settings.
+  template: src=ifcfg-eth0.j2 dest=/etc/sysconfig/network-scripts/ifcfg-{{bridge_if}} owner=root group=root mode=644
+  notify: network restart
+
+- name: bridge interface settings.
+  template: src=ifcfg-br0.j2 dest=/etc/sysconfig/network-scripts/ifcfg-br0 owner=root group=root mode=644
+  notify: network restart
+
+- name: bridge interface settings.
+  template: src=ifcfg-br0.j2 dest=/etc/sysconfig/network-scripts/ifcfg-br0 owner=root group=root mode=644
+  notify: network restart
+
+- name: enable network services
+  service: name=network state=started enabled=yes
+
+- name: ip link check
+  command: ip link
+  register: ip_link_check
+  failed_when: ip_link_check.rc not in [0,1,3]
+  changed_when: ip_link_check.rc != 0
+
+- name: enable bridge
+  service: name=network state=restarted
+  when: ip_link_check.stdout.find(' br0') == -1
+
+- name: libvirtd service
+  service: name=libvirtd state=started enabled=yes
+
+- name: default kvm net-list check
+  command: virsh net-list
+  register: kvm_net_list_check
+  failed_when: kvm_net_list_check.rc not in [0,1,2]
+  changed_when: kvm_net_list_check.stdout.find('default') != -1
+
+- name: delete kvm default-net
+  shell: virsh net-destroy default && virsh net-autostart default --disable && virsh net-undefine default
+  when: kvm_net_list_check.stdout.find('default') != -1
+
+- name: create ks dir
+  file: dest=/opt/os/{{item}} recurse=yes state=directory
+  with_items:
+    - CentOS-70-x86_64
+    - kscfg
+
+- name: httpd settings
+  template: src=httpd.conf.j2 dest=/etc/httpd/conf/httpd.conf owner=root group=root mode=644
+  notify: httpd restart
+
+- name: export ks dir
+  file: src=/opt/os dest=/var/www/html/os state=link
+  notify: httpd restart
+
+- name: enable httpd service
+  service: name=httpd state=started enabled=yes
+
+- name: ks settings
+  template: src=rdo-template-ks.cfg.j2 dest=/opt/os/kscfg/{{item.host}}-ks.cfg owner=root group=root mode=644
+  with_items: kvm_guest

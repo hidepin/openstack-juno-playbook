@@ -1,0 +1,10 @@
+---
+# file: roles/kvm/handlers/main.yml
+- name: network restart
+  service: name=network state=restarted
+
+- name: httpd restart
+  service: name=httpd state=restarted
+
+- name: libvirtd restart
+  service: name=libvirtd state=restarted
