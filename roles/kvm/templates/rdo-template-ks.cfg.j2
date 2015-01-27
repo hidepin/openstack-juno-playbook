@@ -13,18 +13,16 @@ keyboard --vckeymap=us --xlayouts='us'
 lang ja_JP.UTF-8
 
 # Network information
-network  --bootproto=static --device=eth0 --gateway={{item.gateway0}} --ip={{item.ipaddress0}} --netmask={{item.netmask0}}  --nameserver={{item.nameserver0}}--noipv6 --activate
+network  --bootproto=static --device=eth0 --gateway={{item.gateway0}} --ip={{item.ipaddress0}} --nameserver={{item.nameserver0}} --netmask={{item.netmask0}} --noipv6 --activate --hostname={{item.host}}.{{item.domain}}
 network  --bootproto=static --device=eth1 --ip={{item.ipaddress1}} --netmask={{item.netmask1}} --noipv6 --activate
-network  --hostname={{item.host}}.{{item.domain}}
 # Root password
 rootpw --iscrypted $6$87UGl1xwdrvDDUvX$vvk837ushfxJuRSXf8XgMKZhe2VAuAVCfNArXJlS7os6bwGBeO9prQHnzYnodD93Dm.2zj0n9yU1y5wHeS5XR1
 # System services
 services --enabled="chronyd"
 # System timezone
 timezone Asia/Tokyo --isUtc --ntpservers={{ntp_server}}
+eula --agreed
 user --name=openstack --password=$6$kspGn/7kjZvBno.p$wSrX2gwFJl3xwKzViDSfR3KGHnTp1GPJ1xtxKQs/8j1SRzc/Mcoq4dRTCy7bgsBM4yogw1pqqEFsBHebkZFvV/ --iscrypted --gecos="openstack"
-# X Window System configuration information
-xconfig  --startxonboot
 # System bootloader configuration
 bootloader --location=mbr --boot-drive={{kvmguest_disk}}
 # Partition clearing information
@@ -37,22 +35,7 @@ part / --fstype="xfs" --ondisk={{kvmguest_disk}} --size=1 --grow
 poweroff
 
 %packages
-@base
 @core
-@desktop-debugging
-@dial-up
-@fonts
-@gnome-desktop
-@guest-agents
-@guest-desktop-agents
-@input-methods
-@internet-browser
-@multimedia
-@print-client
-@virtualization-client
-@virtualization-hypervisor
-@virtualization-tools
-@x11
 chrony
 
 %end
