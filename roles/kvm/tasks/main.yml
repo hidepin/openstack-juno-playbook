@@ -43,8 +43,11 @@
 - name: libvirtd service
   service: name=libvirtd state=started enabled=yes
 
-- name: kvm vnc settings
+- name: kvm firewalld settings
   firewalld: zone=trusted permanent=true state=enabled
+
+- name: kvm firewalld runtime
+  firewalld: zone=trusted permanent=false state=enabled
 
 - name: default kvm net-list check
   command: virsh net-list
