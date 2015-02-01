@@ -20,10 +20,6 @@
   template: src=ifcfg-br0.j2 dest=/etc/sysconfig/network-scripts/ifcfg-br0 owner=root group=root mode=644
   notify: network restart
 
-- name: bridge interface settings.
-  template: src=ifcfg-br0.j2 dest=/etc/sysconfig/network-scripts/ifcfg-br0 owner=root group=root mode=644
-  notify: network restart
-
 - name: enable network services
   service: name=network state=started enabled=yes
 
@@ -86,3 +82,4 @@
 - name: define internal net
   shell: virsh net-define /root/internal.xml && virsh net-start internal && virsh net-autostart internal
   when: kvm_net_list_check.stdout.find('internal') == -1
+
